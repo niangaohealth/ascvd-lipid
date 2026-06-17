@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>中国血脂管理指南（2024年基层版）- 心血管风险评估系统</title>
+    <style>
+        /* 医疗级专业UI风格定义 */
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+            background-color: #f0f4f8;
+            color: #2c3e50;
+            margin: 0;
+            padding: 20px;
+        }
+        .app-container {
+            max-width: 750px;
+            margin: 0 auto;
+            background: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(160, 175, 192, 0.25);
+            padding: 30px;
+            border-top: 6px solid #1a508b;
+        }
+        .header {
+            text-align: center;
+            border-bottom: 2px solid #e2e8f0;
+            padding-bottom: 15px;
+            margin-bottom: 25px;
+        }
+        .header h1 {
+            font-size: 22px;
+            color: #1a508b;
+            margin: 0 0 8px 0;
+            font-weight: 700;
+        }
+        .header .subtitle {
+            font-size: 13px;
+            color: #64748b;
+            margin: 0;
+            letter-spacing: 0.5px;
+        }
+        .section-title {
+            font-size: 16px;
+            color: #0f172a;
+            font-weight: 600;
+            border-left: 4px solid #1a508b;
+            padding-left: 10px;
+            margin: 25px 0 15px 0;
+        }
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+        .form-group {
+            margin-bottom: 18px;
+        }
+        label {
+            display: block;
+            font-size: 14px;
+            font-weight: 500;
+            color: #334155;
+            margin-bottom: 6px;
+        }
+        input[type="number"], select {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            box-sizing: border-box;
+            font-size: 14px;
+            color: #0f172a;
+            background-color: #fff;
+            transition: border-color 0.2s;
+        }
+        input[type="number"]:focus, select:focus {
+            outline: none;
+            border-color: #1a508b;
+            box-shadow: 0 0 0 3px rgba(26, 80, 139, 0.1);
+        }
+        .checkbox-group {
+            background-color: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 8px;
+        }
+        .checkbox-item {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 10px;
+            cursor: pointer;
+        }
+        .checkbox-item:last-child {
+            margin-bottom: 0;
+        }
+        .checkbox-item input[type="checkbox"] {
+            margin-top: 3px;
+            margin-right: 10px;
+            width: 16px;
+            height: 16px;
+            cursor: pointer;
+        }
+        .checkbox-label {
+            font-size: 13.5px;
+            color: #475569;
+            line-height: 1.4;
+        }
+        .checkbox-desc {
+            font-size: 12px;
+            color: #94a3b8;
+            margin-top: 2px;
+        }
+        .btn-submit {
+            width: 100%;
+            padding: 14px;
+            background-color: #1a508b;
+            color: #ffffff;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            box-shadow: 0 4px 6px -1px rgba(26, 80, 139, 0.2);
+            margin-top: 25px;
+        }
+        .btn-submit:hover {
+            background-color: #113f72;
+        }
+        /* 结果区域样式 */
+        .result-card {
+            margin-top: 30px;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            background: #ffffff;
+            overflow: hidden;
+            display: none;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
+        }
+        .result-header {
+            padding: 15px 20px;
+            color: #fff;
+            font-weight: 600;
+            font-size: 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .result-body {
+            padding: 20px;
+        }
+        .result-row {
+            display: flex;
+            border-bottom: 1px solid #f1f5f9;
+            padding: 12px 0;
+            align-items: baseline;
+        }
+        .result-row:last-child {
+            border-bottom: none;
+        }
+        .result-label {
+            width: 160px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #64748b;
+            flex-shrink: 0;
+        }
+        .result-value {
+            font-size: 14px;
+            color: #0f172a;
+            line-height: 1.5;
+        }
+        .badge-level {
+            font-size: 20px;
+            font-weight: 700;
+        }
+        /* 临床提示色调 */
+        .bg-low { background-color: #10b981; }      /* 绿色 */
+        .bg-med { background-color: #f59e0b; }      /* 橙色 */
+        .bg-high { background-color: #ef4444; }     /* 红色 */
+        .bg-vhigh { background-color: #991b1b; }    /* 深红 */
+        .bg-uhigh { background-color: #4c0519; }    /* 极深红 */
+        
+        .clinical-tips {
+            font-size: 12px;
+            color: #64748b;
+            background-color: #f8fafc;
+            border: 1px dashed #cbd5e1;
+            border-radius: 6px;
+            padding: 12px;
+            margin-top: 15px;
+            line-height: 1.5;
+        }
+    </style>
+</head>
+<body>
+
+<div class="app-container">
+    <div class="header">
+        <h1>ASCVD总体风险评估与血脂管理系统</h1>
+        <div class="subtitle">参照《中国血脂管理指南（基层版2024年）》</div>
+    </div>
+
+    <div class="section-title">第一部分：患者基础资料</div>
+    <div class="grid-2">
+        <div class="form-group">
+            <label>患者性别</label>
+            <select id="gender">
+                <option value="male">男</option>
+                <option value="female">女</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label>患者年龄 (岁)</label>
+            <input type="number" id="age" value="50" min="0" max="120">
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label>是否已有动脉粥样硬化性心血管疾病 (ASCVD) 病史？</label>
+        <select id="hasASCVD">
+            <option value="no">否（进行一级预防风险评估）</option>
+            <option value="yes">是（进行二级预防风险评估）</option>
+        </select>
+        <div class="checkbox-desc" style="margin-top: 4px;">*注：ASCVD包括急性冠脉综合征、心肌梗死、稳定型心绞痛、血运重建术后、缺血性卒中、TIA、有症状的外周动脉疾病。</div>
+    </div>
+
+    <div id="secondarySection" style="display: none;">
+        <div class="section-title">第二部分：二级预防临床事件与高危因素筛查</div>
+        
+        <label>1. 发生过以下严重 ASCVD 事件（可多选）：</label>
+        <div class="checkbox-group">
+            <label class="checkbox-item">
+                <input type="checkbox" class="severe-event" value="acs">
+                <div class="checkbox-label">
+                    <div>近期急性冠脉综合征（ACS）病史</div>
+                    <div class="checkbox-desc">指本次评估前 1 年之内的发病</div>
+                </div>
+            </label>
+            <label class="checkbox-item">
+                <input type="checkbox" class="severe-event" value="ami">
+                <div class="checkbox-label">
+                    <div>既往心肌梗死病史</div>
+                    <div class="checkbox-desc">排除了上述1年内的近期急性冠脉综合征</div>
+                </div>
+            </label>
+            <label class="checkbox-item">
+                <input type="checkbox" class="severe-event" value="stroke">
+                <div class="checkbox-label">
+                    <div>缺血性卒中史</div>
+                </div>
+            </label>
+            <label class="checkbox-item">
+                <input type="checkbox" class="severe-event" value="pad">
+                <div class="checkbox-label">
+                    <div>有症状的外周血管病变</div>
+                    <div class="checkbox-desc">且既往接受过血运重建（放支架/搭桥等）或截肢</div>
+                </div>
+            </label>
+        </div>
+
+        <label style="margin-top: 15px;">2. 合并以下高危险因素（可多选）：</label>
+        <div class="checkbox-group">
+            <label class="checkbox-item">
+                <input type="checkbox" class="high-risk-factor" value="recur_low">
+                <div class="checkbox-label">
+                    <div>在已采取治疗且 LDL-C &lt; 1.8 mmol/L 时再次发生严重的 ASCVD 事件</div>
+                </div>
+            </label>
+            <label class="checkbox-item">
+                <input type="checkbox" class="high-risk-factor" value="early_cad">
+                <div class="checkbox-label">
+                    <div>患者本人符合早发冠心病</div>
+                    <div class="checkbox-desc">指男性患者发病 &lt; 55岁，或女性患者发病 &lt; 65岁</div>
+                </div>
+            </label>
+            <label class="checkbox-item">
+                <input type="checkbox" class="high-risk-factor" value="fh_ldl">
+                <div class="checkbox-label">
+                    <div>明确确诊为家族性高胆固醇血症 (FH) 或基线未用药 LDL-C &gt; 4.9 mmol/L</div>
+                </div>
+            </label>
+            <label class="checkbox-item">
+                <input type="checkbox" class="high-risk-factor" value="revascularization">
+                <div class="checkbox-label">
+                    <div>既往有 CABG（搭桥）或 PCI（支架）史</div>
+                </div>
+            </label>
+            <label class="checkbox-item">
+                <input type="checkbox" class="high-risk-factor" value="diabetes">
+                <div class="checkbox-label">
+                    <div>合并糖尿病</div>
+                </div>
+            </label>
+            <label class="checkbox-item">
+                <input type="checkbox" class="high-risk-factor" value="hypertension">
+                <div class="checkbox-label">
+                    <div>合并高血压</div>
+                </div>
+            </label>
+            <label class="checkbox-item">
+                <input type="checkbox" class="high-risk-factor" value="ckd">
+                <div class="checkbox-label">
+                    <div>慢性肾脏病（CKD）3~4期</div>
+                </div>
+            </label>
+            <label class="checkbox-item">
+                <input type="checkbox" class="high-risk-factor" value="smoking">
+                <div class="checkbox-label">
+                    <div>目前吸烟</div>
+                </div>
+            </label>
+        </div>
+    </div>
+
+    <div id="primarySection">
+        <div class="section-title">第二部分：一级预防临床生化指标与并存疾病</div>
+        
+        <div class="grid-2">
+            <div class="form-group">
+                <label>总胆固醇 (TC, mmol/L)</label>
+                <input type="number" id="p_tc" step="0.01" value="4.50">
+            </div>
+            <div class="form-group">
+                <label>低密度脂蛋白胆固醇 (LDL-C, mmol/L)</label>
+                <input type="number" id="p_ldl" step="0.01" value="2.80">
+            </div>
+        </div>
+        <div class="grid-2">
+            <div class="form-group">
+                <label>高密度脂蛋白胆固醇 (HDL-C, mmol/L)</label>
+                <input type="number" id="p_hdl" step="0.01" value="1.20">
+            </div>
+            <div class="form-group">
+                <label>甘油三酯 (TG, mmol/L) <span style="font-size:11px;color:#94a3b8;">(选填)</span></label>
+                <input type="number" id="p_tg" step="0.01" value="1.60">
+            </div>
+        </div>
+
+        <label style="margin-top: 10px;">患者合并疾病及家族病史筛查：</label>
+        <div class="checkbox-group">
+            <label class="checkbox-item">
+                <input type="checkbox" id="p_hasHypertension">
+                <div class="checkbox-label">
+                    <div>合并高血压</div>
+                </div>
+            </label>
+            <label class="checkbox-item">
+                <input type="checkbox" id="p_hasDiabetes">
+                <div class="checkbox-label">
+                    <div>合并糖尿病</div>
+                </div>
+            </label>
+            <label class="checkbox-item">
+                <input type="checkbox" id="p_hasCKD">
+                <div class="checkbox-label">
+                    <div>慢性肾脏病（CKD）3~4期</div>
+                </div>
+            </label>
+            <label class="checkbox-item">
+                <input type="checkbox" id="p_hasFH">
+                <div class="checkbox-label">
+                    <div>明确临床诊断为：家族性高胆固醇血症（FH）</div>
+                </div>
+            </label>
+            <label class="checkbox-item">
+                <input type="checkbox" id="p_isSmoking">
+                <div class="checkbox-label">
+                    <div>目前吸烟</div>
+                </div>
+            </label>
+        </div>
+    </div>
+
+    <button class="btn-submit" id="btnCalculate">运行医学计算与风险判定</button>
+
+    <div class="result-card" id="resultCard">
+        <div class="result-header" id="resultHeader">
+            <span>临床评估报告结论</span>
+            <span class="badge-level" id="lblLevel">--</span>
+        </div>
+        <div class="result-body">
+            <div class="result-row">
+                <div class="result-label">首要干预靶点 (LDL-C)</div>
+                <div class="result-value" id="valLdlTarget" style="font-weight:700; color:#0f172a;">--</div>
+            </div>
+            <div class="result-row">
+                <div class="result-label">次要干预靶点 (非HDL-C)</div>
+                <div class="result-value" id="valNonHdlTarget">--</div>
+            </div>
+            <div class="result-row">
+                <div class="result-label">起始药物干预策略</div>
+                <div class="result-value" id="valStrategy">--</div>
+            </div>
+            <div class="result-row">
+                <div class="result-label">临床监测与随访建议</div>
+                <div class="result-value" id="valMonitor">--</div>
+            </div>
+            <div class="result-row" id="rowAutoFactors" style="display:none;">
+                <div class="result-label">后台自动计分校验</div>
+                <div class="result-value" id="valAutoFactors" style="color: #475569; font-size:13px;">--</div>
+            </div>
+            
+            <div class="clinical-tips">
+                <strong>基层指南临床提示：</strong><br>
+                1. 调脂药物治疗的基础是生活方式干预（合理膳食、适度身体活动、控制体重、戒烟限酒）。膳食建议限制油脂总量至20~25g/d，减少膳食胆固醇至300mg/d以下。<br>
+                2. 推荐起始使用中等强度他汀类药物。当单一用药不达标时，应及时联合胆固醇吸收抑制剂（依折麦布等）或结合PCSK9抑制剂。
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // 监听预防模式切换
+    document.getElementById('hasASCVD').addEventListener('change', function() {
+        if (this.value === 'yes') {
+            document.getElementById('secondarySection').style.display = 'block';
+            document.getElementById('primarySection').style.display = 'none';
+        } else {
+            document.getElementById('secondarySection').style.display = 'none';
+            document.getElementById('primarySection').style.display = 'block';
+        }
+    });
+
+    // 绑定核心计算按钮
+    document.getElementById('btnCalculate').addEventListener('click', function() {
+        const hasASCVD = document.getElementById('hasASCVD').value;
+        const gender = document.getElementById('gender').value;
+        const age = parseInt(document.getElementById('age').value) || 0;
+        
+        let riskLevel = "";
+        let ldlTargetText = "";
+        let nonHdlTargetText = "";
+        let strategyText = "";
+        let monitorText = "开始药物治疗后4~6周随访复查血脂、血糖、肝酶（ALT/AST）和肌酸激酶（CK）；安全达标后，每3~6个月随访复查。";
+        let autoScoreInfo = "";
+        let showScoreRow = false;
+
+        if (hasASCVD === 'yes') {
+            // ==========================================
+            // 【二级预防判定逻辑】
+            // ==========================================
+            let severeEventsCount = 0;
+            document.querySelectorAll('.severe-event:checked').forEach(() => { severeEventsCount++; });
+
+            let highRiskFactorsCount = 0;
+            document.querySelectorAll('.high-risk-factor:checked').forEach(() => { highRiskFactorsCount++; });
+
+            // 检查特定合并糖尿病状态用于二级预防特殊提示
+            let hasDiabetesSecondary = false;
+            document.querySelectorAll('.high-risk-factor:checked').forEach((el) => {
+                if (el.value === 'diabetes') hasDiabetesSecondary = true;
+            });
+
+            // 逻辑：发生过≥2次严重ASCVD事件；或发生过1次严重ASCVD事件且合并≥2个高危险因素 => 超高危
+            if (severeEventsCount >= 2 || (severeEventsCount === 1 && highRiskFactorsCount >= 2)) {
+                riskLevel = "超高危";
+                ldlTargetText = "< 1.4 mmol/L 且 较基线降低幅度 > 50%";
+                nonHdlTargetText = "< 2.2 mmol/L";
+                strategyText = "健康生活方式干预 + 起始中等强度他汀类药物。对于基线LDL-C较高、预计单用或双联难以达标的超高危患者，可考虑直接联用他汀类药物和PCSK9抑制剂早期达标。";
+            } else {
+                riskLevel = "极高危";
+                // 特定校正：根据指南特定人群章节，糖尿病合并ASCVD患者（属于二级预防）
+                if (hasDiabetesSecondary) {
+                    riskLevel = "极高危 (合并糖尿病)";
+                    ldlTargetText = "< 1.4 mmol/L 且 较基线降低幅度 > 50% （依据糖尿病合并ASCVD规则执行最高级别控制）";
+                    nonHdlTargetText = "< 2.2 mmol/L";
+                } else {
+                    ldlTargetText = "< 1.8 mmol/L 且 较基线降低幅度 > 50%";
+                    nonHdlTargetText = "< 2.6 mmol/L";
+                }
+                strategyText = "健康生活方式干预 + 起始中等强度他汀类药物，4~6周复查不达标时，加用胆固醇吸收抑制剂（依折麦布/海博麦布）和/或PCSK9抑制剂。";
+            }
+        } else {
+            // ==========================================
+            // 【一级预防判定逻辑】
+            // ==========================================
+            const tc = parseFloat(document.getElementById('p_tc').value) || 0;
+            const ldl = parseFloat(document.getElementById('p_ldl').value) || 0;
+            const hdl = parseFloat(document.getElementById('p_hdl').value) || 0;
+            
+            const hasHypertension = document.getElementById('p_hasHypertension').checked;
+            const hasDiabetes = document.getElementById('p_hasDiabetes').checked;
+            const hasCKD = document.getElementById('p_hasCKD').checked;
+            const hasFH = document.getElementById('p_hasFH').checked;
+            const isSmoking = document.getElementById('p_isSmoking').checked;
+
+            // 1. 【核心逻辑：直接列为高危人群判定】
+            // 指南图1明确规定：符合下列任意条件者可直接列为高危人群，无需进行10年风险评估：
+            // ① LDL-C ≥ 4.9 mmol/L 或 TC ≥ 7.2 mmol/L
+            // ② 确诊家族性高胆固醇血症 (FH)
+            // ③ 糖尿病患者且年龄 ≥ 40岁
+            // ④ CKD 3~4期
+            if (ldl >= 4.9 || tc >= 7.2 || hasFH || (hasDiabetes && age >= 40) || hasCKD) {
+                riskLevel = "高危 (直接列入)";
+                
+                // 糖尿病特殊亚群校验 (图1注释及特定人群要求：ASCVD风险高危的糖尿病人群目标更严格)
+                if (hasDiabetes && age >= 40) {
+                    riskLevel = "高危 (糖尿病人群-年龄≥40岁)";
+                    ldlTargetText = "< 1.8 mmol/L 且 较基线降低幅度 > 50%";
+                    nonHdlTargetText = "< 2.6 mmol/L";
+                } else {
+                    ldlTargetText = "< 2.6 mmol/L";
+                    nonHdlTargetText = "< 3.4 mmol/L";
+                }
+                strategyText = "健康生活方式干预3个月，若不能达到降脂目标，启用常规剂量或中等强度他汀类药物治疗。不达标者考虑联合胆固醇吸收抑制剂。";
+            } else {
+                // 2. 【核心逻辑：10年风险评估矩阵自动测算】
+                
+                // 【核心升级点】自动计算“其他危险因素个数” (根据指南图1注释：包括吸烟、低HDL-C、年龄)
+                let autoRiskCount = 0;
+                let factorDetails = [];
+
+                // ① 年龄判定：自动识别 男性≥45岁，女性≥55岁
+                if (gender === 'male' && age >= 45) {
+                    autoRiskCount++;
+                    factorDetails.push("男性年龄≥45岁");
+                } else if (gender === 'female' && age >= 55) {
+                    autoRiskCount++;
+                    factorDetails.push("女性年龄≥55岁");
+                }
+
+                // ② 吸烟判定
+                if (isSmoking) {
+                    autoRiskCount++;
+                    factorDetails.push("目前吸烟");
+                }
+
+                // ③ 低高密度脂蛋白胆固醇判定：自动校验表1指标值 HDL-C < 1.0 mmol/L
+                if (hdl > 0 && hdl < 1.0) {
+                    autoRiskCount++;
+                    factorDetails.push("低HDL-C异常(&lt;1.0 mmol/L)");
+                }
+
+                if (autoRiskCount > 3) autoRiskCount = 3; // 指南最大危险因素矩阵为3个
+
+                // 自动对总胆固醇/低密度脂蛋白进行血清水平区间划分（层1、层2、层3）
+                let cholLevel = 1; // 默认层1
+                if ((tc >= 5.2 && tc < 7.2) || (ldl >= 3.4 && ldl < 4.9)) {
+                    cholLevel = 3; // 层3
+                } else if ((tc >= 4.1 && tc < 5.2) || (ldl >= 2.6 && ldl < 3.4)) {
+                    cholLevel = 2; // 层2
+                } else {
+                    cholLevel = 1; // 层1 (低于或处于合适水平范围)
+                }
+
+                // 查表决策矩阵逻辑
+                if (!hasHypertension) {
+                    // 无高血压风险矩阵
+                    if (autoRiskCount <= 1) riskLevel = "低危";
+                    else if (autoRiskCount === 2) riskLevel = (cholLevel === 3) ? "中危" : "低危";
+                    else if (autoRiskCount === 3) riskLevel = (cholLevel === 1) ? "低危" : "中危";
+                } else {
+                    // 有高血压风险矩阵
+                    if (autoRiskCount === 0) riskLevel = (cholLevel === 3) ? "中危" : "低危";
+                    else if (autoRiskCount === 1) riskLevel = "中危";
+                    else if (autoRiskCount === 2) riskLevel = (cholLevel === 1) ? "中危" : "高危";
+                    else if (autoRiskCount === 3) riskLevel = "高危";
+                }
+
+                // 确定不同级别对应的干预目标值
+                if (riskLevel === "低危") {
+                    ldlTargetText = "< 3.4 mmol/L";
+                    nonHdlTargetText = "< 4.2 mmol/L";
+                    strategyText = "以健康生活方式干预为主，建议每2~5年定期复查一次血脂项目。";
+                } else if (riskLevel === "中危") {
+                    ldlTargetText = "< 2.6 mmol/L";
+                    nonHdlTargetText = "< 3.4 mmol/L";
+                    strategyText = "进行治疗性生活方式干预，若干预3个月后LDL-C仍未达标，建议在临床指导下启动中等强度他汀类药物。";
+                } else if (riskLevel === "高危") {
+                    ldlTargetText = "< 2.6 mmol/L";
+                    nonHdlTargetText = "< 3.4 mmol/L";
+                    strategyText = "积极执行生活方式干预，并即刻起始加用常规剂量或中等强度他汀类药物治疗，4~6周复查不达标联合非他汀。";
+                }
+
+                // 特殊校正：年轻糖尿病患者 (<40岁) 虽属于低中危，但根据特定人群规则，目标需严控在 2.6 以下
+                if (hasDiabetes && (riskLevel === "低危" || riskLevel === "中危")) {
+                    riskLevel += " (合并糖尿病)";
+                    ldlTargetText = "< 2.6 mmol/L (强制执行糖尿病低/中危干预基准线)";
+                    nonHdlTargetText = "< 3.4 mmol/L";
+                }
+
+                showScoreRow = true;
+                autoScoreInfo = `【判定依据】系统自动查验危险因素共 ${autoRiskCount} 个 (${factorDetails.join('、') || '无'})；生化胆固醇归属于分层区间层 ${cholLevel}。`;
+            }
+        }
+
+        // ==========================================
+        // 【输出报告并呈现渲染效果】
+        // ==========================================
+        const resultCard = document.getElementById('resultCard');
+        const resultHeader = document.getElementById('resultHeader');
+        const lblLevel = document.getElementById('lblLevel');
+        
+        document.getElementById('valLdlTarget').innerText = ldlTargetText;
+        document.getElementById('valNonHdlTarget').innerText = nonHdlTargetText;
+        document.getElementById('valStrategy').innerText = strategyText;
+        document.getElementById('valMonitor').innerText = monitorText;
+
+        // 控制计分校验行的呈现
+        const rowAutoFactors = document.getElementById('rowAutoFactors');
+        if (showScoreRow) {
+            rowAutoFactors.style.display = "flex";
+            document.getElementById('valAutoFactors').innerText = autoScoreInfo;
+        } else {
+            rowAutoFactors.style.display = "none";
+        }
+
+        // 清除历史背景CSS类
+        resultHeader.className = "result-header";
+        
+        // 渲染符合医学标准的临床危机色调
+        if (riskLevel.includes("低危")) {
+            resultHeader.classList.add("bg-low");
+        } else if (riskLevel.includes("中危")) {
+            resultHeader.classList.add("bg-med");
+        } else if (riskLevel.includes("高危") && !riskLevel.includes("极高危") && !riskLevel.includes("超高危")) {
+            resultHeader.classList.add("bg-high");
+        } else if (riskLevel.includes("极高危")) {
+            resultHeader.classList.add("bg-vhigh");
+        } else if (riskLevel.includes("超高危")) {
+            resultHeader.classList.add("bg-uhigh");
+        }
+
+        lblLevel.innerText = riskLevel;
+        resultCard.style.display = "block";
+        
+        // 顺滑滚动至结果生成区
+        resultCard.scrollIntoView({ behavior: 'smooth' });
+    });
+</script>
+
+</body>
+</html>
